@@ -63,7 +63,6 @@ module.exports = [{
                     data: false
                 }
             }
-
             return {
                 code: 20000,
                 data

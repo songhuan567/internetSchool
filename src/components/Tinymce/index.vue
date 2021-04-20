@@ -89,6 +89,7 @@ export default {
   },
   mounted() {
     this.init()
+    console.log(this.value)
   },
   activated() {
     if (window.tinymce) {
