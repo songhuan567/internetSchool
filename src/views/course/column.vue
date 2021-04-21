@@ -3,15 +3,15 @@
         <el-card v-if="isshow" style="margin-bottom: 20px" shadow="never">
             <div class="column">
                 <div style="width: 200px; height: 100px; background-color: skyblue; margin: 20px">
-                    <img src="" alt="">
+                    <img :src="viewdata.cover" alt="" >
                 </div>
                 <div>
                     <div class="top">
-                        <h3>全入今备素或报长。</h3>
+                        <h3>{{ viewdata.title }}</h3>
                         <p style="color:#bbb">完结</p>
                     </div>
-                    <span style="color: #bbb; font-size: 14px">化花见量把真角主更需样民决设是每。在照养及识次求马大国记术称行。消现条米原极越计月具青先九济干米经。三做声市月且总称二下化省结整话多见。你支运管带深作相五去总给细了生。物空据美除还己新子军三地多。</span>
-                    <p style="color: red">￥price</p>
+                    <span style="color: #bbb; font-size: 14px">{{ viewdata.content }}</span>
+                    <p style="color: red">￥{{ viewdata.price }}</p>
                     <el-button type="warning" size="mini">上架</el-button>
                     <el-button style="margin-left: -9px" size="mini">设为连载</el-button>
                 </div>
@@ -53,6 +53,11 @@
                     </div>
                 </template>
             </el-table-column>
+            <el-table-column label="更新状态" align="center" width="150">  
+                <template slot-scope="scope">
+                    <span :style="{color: scope.row.isend ? '':'red'}">{{ scope.row.isend | filterIsend }}</span> 
+                </template>
+            </el-table-column>
             <el-table-column label="订阅量" align="center" width="150">  
                 <template slot-scope="scope">
                     {{ scope.row.sub_count }}
@@ -70,7 +75,7 @@
             </el-table-column>
             <el-table-column label="操作" align="center" width="300">
                 <template slot-scope="scope">
-                    <el-button size="mini" type="warning" @click="view(scope.$index, scope.row)">查看</el-button>
+                    <el-button size="mini" type="warning" @click="view(scope.$index, scope.row)" v-if="!isshow">查看</el-button>
                     <el-button size="mini" type="primary" @click="editData(scope.$index, scope.row)">编辑</el-button>
                     <el-button size="mini" @click="changeStatus(scope.$index, scope.row)" :type="!scope.row.status ? 'success' : ''">{{ scope.row.status ? '下架' : '上架'}}</el-button>
                     <el-popover
@@ -99,10 +104,10 @@
                     <Singlemage></Singlemage>
                 </el-form-item>
                 <el-form-item label="课程介绍"  style="width: 50%" prop="content">
-                    <Tinymce v-model="form.content"></Tinymce>
+                    <el-input type="textarea" placeholder="请输入课程介绍" v-model="form.try"></el-input>
                 </el-form-item>
                 <el-form-item label="课程内容" style="width: 50%" prop="try">
-
+                    <Tinymce v-model="form.content"></Tinymce>
                 </el-form-item>
                 <el-form-item label="课程价格" >
                    <el-input-number v-model="form.price" :step="1" :min='0'></el-input-number>
@@ -110,6 +115,10 @@
                 <el-form-item label="状态">
                     <el-radio v-model="form.status" :label="0">下架</el-radio>
                     <el-radio v-model="form.status" :label="1">上架</el-radio>
+                </el-form-item>
+                <el-form-item label="更新状态">
+                    <el-radio v-model="form.isend" :label="0">连载中</el-radio>
+                    <el-radio v-model="form.isend" :label="1">已完结</el-radio>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit('form')">保存</el-button>
@@ -151,7 +160,7 @@
 
 <script>
 
-import { fetchList, updateColumn } from '../../api/column'
+import { fetchList, updateColumn, fetchDetail } from '../../api/column'
 import Singlemage from '../../components/Upload/SingleImage'
 import Tinymce from '@/components/Tinymce'
 
@@ -172,8 +181,23 @@ const formDefault = {
     content:null,
     cover:"http://dummyimage.com/200x100",
     status: 1,
+    isend: 0,
 }
 
+
+const viewData = {
+    content: "",
+    cover: "",
+    created_time: "",
+    id: null,
+    isend:null, 
+    price: null,
+    status: null,
+    sub_count: null,
+    title: "",
+    try: "",
+    updated_time: "",
+}
 export default {
     components:{
         Singlemage,
@@ -199,16 +223,16 @@ export default {
                     {required: true, message: "请输入标题", trigger: 'blur'}
                 ],
                 try: [
-                    {required: true, message: "请输入试看内容", trigger: 'blur'}
+                    {required: true, message: "课程介绍不能为空", trigger: 'blur'}
                 ],
                 content:[
-                    {required: true, message: "请输入课程内容", trigger: 'blur'}
+                    {required: true, message: "课程内容不能为空", trigger: 'blur'}
                 ]
             },
             isEdit: false,
             visible: false,
             currentindex:null,
-
+            viewdata: Object.assign({}, viewData)
         }
     },
 
@@ -327,7 +351,11 @@ export default {
 
         view (index, row) {
             console.log(index, row)
-            this.$router.push({path:'/course/column', query:{id: row.id}})
+            this.$router.push({path:'/course/column_detail', query:{id: row.id}})
+            fetchDetail({id: row.id}).then(res => {
+                console.log(res)
+                this.viewdata = res.data
+            })
             
         }
     },
@@ -345,6 +373,14 @@ export default {
                 return '已上架'
             } else {
                 return '已下架'
+            }
+        },
+
+        filterIsend (value) {
+            if(value == 1) {
+                return '已完结'
+            } else {
+                return '连载中'
             }
         }
     }
