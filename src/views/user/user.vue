@@ -323,6 +323,8 @@ export default {
             console.log(this.listQuery)
             fetchList(this.listQuery).then(res => {
                 console.log(res)
+                this.list = res.data.items
+                this.total = res.data.total
             })
             // fetchList(this.listQuery).then(res => {
             //     console.log(res)
