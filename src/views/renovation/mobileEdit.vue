@@ -9,7 +9,9 @@
                     </div>
                     <div>
                         <el-col :span="12" v-for="(item, index) in menuList" :key="index">
-                            <el-card shadow="hover" :body-style="{ padding: '15px 8px','cursor':'pointer' }">
+                            <el-card shadow="hover" :body-style="{ padding: '15px 8px','cursor':'pointer' }"
+                                @click.native="handleComponent(item)"
+                            >
                                 <div style="display: flex;align-items: center;">
                                     <i :class="item.icon" style="font-size: 25px; color: #13ce66;margin-right:8px"></i>
                                     <span style="font-size: 13px">{{ item.title }}</span>
@@ -42,9 +44,12 @@
                                 <i class="el-icon-delete" @click.stop="deleteComponent(index)"></i>
                             </div>
                             <!-- 组件 -->
-                            <div style="height: 100px;border: 1px solid;display: flex;align-items: center;justify-content: center;">
+                            <!-- <div style="height: 100px;border: 1px solid;display: flex;align-items: center;justify-content: center;">
                                 {{item.id}}
-                            </div>
+                            </div> -->
+                            <template v-if="item.type == 'search'">
+                                <SearchBar :placeholder="item.default.placeholder"></SearchBar>
+                            </template>
                         </div>
                     </div>
                 </el-card>
@@ -59,38 +64,50 @@
 
 <script>
 import util from '@/utils/util.js'
+import SearchBar from "./components/search-bar"
 
 export default {
+    components:{
+        SearchBar,
+    },
     data () {
         return {
             menuList: [{
                 icon: "el-icon-s-order",
                 title: "课程列表",
                 type: "list",
-                default: {}
+                default: {
+                    listType: "two",
+                    title: "标题",
+                    showMore: false,
+                    more: false,
+                    data: []
+                }
             }, {
                 icon: "el-icon-search",
                 title: "搜索框",
-                type: "list",
-                default: {}
+                type: "search",
+                default: {
+                    placeholder: "请输入搜索关键词"
+                }
             }],
 
-             templates: [{
-                    id: 1,
-                    checked: false
-                }, {
-                    id: 2,
-                    checked: false
-                }, {
-                    id: 3,
-                    checked: false
-                }, {
-                    id: 4,
-                    checked: false
-                }]
+             templates: []
         }
     },
     methods:{
+        
+
+        // 点击组件 把组件添加到 templates
+        handleComponent (row) {
+            let data = JSON.parse(JSON.stringify(row))
+            data.checked = false
+            data.type = row.type
+            this.templates.push(data)
+        },
+
+
+        // 删除组件
         deleteComponent(index) {
             this.$confirm('是否要删除该组件?', '提示', {
                 confirmButtonText: '删除',
@@ -105,6 +122,7 @@ export default {
             })
         },
 
+        // 选中组件
         handleCheckedComponent(row) {
             this.templates.map(v => {
                 v.checked = false
@@ -113,13 +131,14 @@ export default {
 
             row.checked = true
         },
-
+        // 上移
         moveUp(index) {
             if (index == 0) {
                 return
             }
             util.moveUp(this.templates, index)
         },
+        // 下移动
         moveDown(index) {
             if (index == (this.templates.length - 1)) {
                 return
