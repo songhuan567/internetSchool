@@ -265,6 +265,15 @@ export const asyncRoutes = [
               title: 'PC端',
             }
           },
+          {
+            hidden:true,
+            path: 'mobile_edit',
+            component: () => import('@/views/renovation/mobileEdit'),
+            name: 'mobile_edit',
+            meta: {
+              title: '移动端编辑',
+            }
+          },
          
         
         ]
