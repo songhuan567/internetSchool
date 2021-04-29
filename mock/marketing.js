@@ -30,23 +30,27 @@ module.exports = [{
                     start_time: '@now',
                     end_time: '@now',
                     created_time: '@now',
-                    updated_time: '@now'
+                    updated_time: '@now',
+                    time_status: '已下架',
                 })
 
                 // 活动中
                 if (i < 2) {
                     obj.start_time = '2021-01-15 10:00:00'
                     obj.end_time = '2031-01-15 10:00:00'
+                    obj.time_status = '拼团中'
                 }
                 // 未开始
                 else if (i >= 2 && i < 5) {
                     obj.start_time = '2029-01-15 10:00:00'
                     obj.end_time = '2031-01-15 10:00:00'
+                    obj.time_status = '未开始'
                 }
                 // 已结束
                 else if (i > 5) {
                     obj.start_time = '2020-01-15 10:00:00'
                     obj.end_time = '2020-12-15 10:00:00'
+                    obj.time_status = '已结束'
                 }
 
 
@@ -125,23 +129,27 @@ module.exports = [{
                     start_time: '@now',
                     end_time: '@now',
                     created_time: '@now',
-                    updated_time: '@now'
+                    updated_time: '@now',
+                    time_status: null,
                 })
 
                 // 活动中
                 if (i < 2) {
                     obj.start_time = '2021-01-15 10:00:00'
                     obj.end_time = '2031-01-15 10:00:00'
+                    obj.time_status = '拼团中'
                 }
                 // 未开始
                 else if (i >= 2 && i < 5) {
                     obj.start_time = '2029-01-15 10:00:00'
                     obj.end_time = '2031-01-15 10:00:00'
+                    obj.time_status = '未开始'
                 }
                 // 已结束
                 else if (i > 5) {
                     obj.start_time = '2020-01-15 10:00:00'
                     obj.end_time = '2020-12-15 10:00:00'
+                    obj.time_status='已结束'
                 }
 
 
