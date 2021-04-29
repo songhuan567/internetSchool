@@ -50,6 +50,16 @@
                             <template v-if="item.type == 'search'">
                                 <SearchBar :placeholder="item.default.placeholder"></SearchBar>
                             </template>
+
+                            <template v-else-if="item.type == 'list'">
+                                <ListBar 
+                                :placeholder="item.default.placeholder" 
+                                :title="item.title"
+                                :showMore="item.default.showMore"
+                                :list="item.data" 
+                                :listType="item.default.listType"
+                            ></ListBar>
+                            </template>
                         </div>
                     </div>
                 </el-card>
@@ -75,11 +85,13 @@
 import util from '@/utils/util.js'
 import SearchBar from "./components/search-bar"
 import componentForm from "./components/component-form"
+import ListBar from "./components/list"
 
 export default {
     components:{
         SearchBar,
-        componentForm
+        componentForm,
+        ListBar
     },
     data () {
         return {
