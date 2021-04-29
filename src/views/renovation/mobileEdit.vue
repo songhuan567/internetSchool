@@ -54,10 +54,19 @@
                     </div>
                 </el-card>
             </el-col>
-            <el-col :span="10" v-show="false">
-                <el-card class="right">333</el-card>
-            </el-col>
         </el-row>
+        
+        <!-- 组件编辑 -->
+        <div style="position: fixed;right: 40px;top: 100px;">
+             <el-card shadow="always" :body-style="{ padding: '20px' }" style="width: 450px;height: 85vh;position: relative;">
+                <div slot="header">
+                    <span>组件编辑</span>
+                </div>
+                <div style="overflow-y: auto;position: absolute;left: 0;right: 0;bottom: 0;top: 60px;">
+                    <componentForm ref="componentForm" :formType="currentComponent.type" @change="onCurrentComponentChange"></componentForm>
+                </div>
+            </el-card>
+        </div>
     </div>
 
 </template>
@@ -65,10 +74,12 @@
 <script>
 import util from '@/utils/util.js'
 import SearchBar from "./components/search-bar"
+import componentForm from "./components/component-form"
 
 export default {
     components:{
         SearchBar,
+        componentForm
     },
     data () {
         return {
@@ -95,8 +106,21 @@ export default {
              templates: []
         }
     },
+    computed: {
+        // 当前选中的组件
+        currentComponent () {
+            let i = this.templates.findIndex(v => v.checked)
+            return this.templates[i] || {}
+        }
+    },
     methods:{
-        
+         // 监听表单组件的表单变化
+        onCurrentComponentChange(e) {
+            let i = this.templates.findIndex(v => v.checked)
+            if (i != -1) {
+                this.templates[i][e.key] = e.value
+            }
+        },
 
         // 点击组件 把组件添加到 templates
         handleComponent (row) {
